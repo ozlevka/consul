@@ -1,0 +1,25 @@
+version: "3.2"
+
+services:
+  consul-1:
+    image: consul:0.8.3
+    command: "consul agent -data-dir=/tmp/data -bootstrap-expect=3 -server -ui -client=0.0.0.0 -disable-host-node-id=true"
+    ports:
+      - "8500:8500"
+    environment:
+      - "CONSUL_CLIENT_INTERFACE=eth0"
+  consul-2:
+    image: consul:0.8.3
+    command: "consul agent -data-dir=/tmp/data -server -retry-join=consul-1 -disable-host-node-id=true"
+    environment:
+      - "CONSUL_CLIENT_INTERFACE=eth0"
+    links:
+      - consul-1
+  
+  consul-3:
+    image: consul:0.8.3
+    command: "consul agent -data-dir=/tmp/data -server -retry-join=consul-1 -disable-host-node-id=true"
+    environment:
+      - "CONSUL_CLIENT_INTERFACE=eth0"
+    links:
+      - consul-1
