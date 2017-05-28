@@ -4,8 +4,13 @@ services:
   consul-1:
     image: consul:0.8.3
     command: "consul agent -data-dir=/tmp/data -bootstrap-expect=3 -server -ui -client=0.0.0.0 -disable-host-node-id=true"
+    networks:
+      - consul
     ports:
       - "8500:8500"
+      - "8300:8300"
+      - "8301:8301"
+      - "8302:8302"
     environment:
       - "CONSUL_CLIENT_INTERFACE=eth0"
   consul-2:
@@ -15,6 +20,8 @@ services:
       - "CONSUL_CLIENT_INTERFACE=eth0"
     links:
       - consul-1
+    networks:
+      - consul
   
   consul-3:
     image: consul:0.8.3
@@ -23,3 +30,13 @@ services:
       - "CONSUL_CLIENT_INTERFACE=eth0"
     links:
       - consul-1
+    networks:
+      - consul
+
+
+networks:
+  consul:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 192.168.0.0/24
