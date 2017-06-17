@@ -2,9 +2,11 @@
 const consul = require('consul')();
 const os = require('os');
 const _ = require('underscore');
+const Puid = require('puid');
 
-const default_interface = 'eth0';
 let serviceOptions = {};
+
+const puid = new Puid();
 
 
 
@@ -14,11 +16,7 @@ function checkOptions() {
     }
 
     if(!serviceOptions.id) {
-        serviceOptions.id = os.hostname()
-    }
-
-    if(!serviceOptions.default_interface) {
-        serviceOptions.default_interface = default_interface;
+        serviceOptions.id = puid.generate();
     }
 
     if(!serviceOptions.address) {
@@ -32,10 +30,10 @@ function checkOptions() {
 
 function getServiceAddress() {
     const interfaces = os.networkInterfaces();
-    const cand = _.filter(interfaces[serviceOptions.default_interface], (int) => {
-        return int.family =='IPv4'
+    const arr = _.flatten(_.values(interfaces));
+    const cand = _.filter(arr, (obj) => {
+        return obj.family =='IPv4' && !obj.internal;
     });
-
     return cand[0].address;
 }
 
@@ -50,15 +48,24 @@ module.exports.getServiceInfo = function() {
 };
 
 module.exports.register = function(cb) {
-
+    consul.agent.service.register(this.getServiceInfo(), cb);
 };
 
 
 module.exports.deregister = function(cb) {
-
+    consul.agent.service.deregister(this.getServiceInfo(), cb);
 };
 
 
 module.exports.getServicesList = function(options, cb) {
+    consul.agent.service.list(cb);
+};
 
+
+module.exports.getServiceNodes = function(options, cb) {
+    let name = serviceOptions.name;
+    if(options && options.name) {
+        name = options.name
+    }
+    consul.catalog.service.nodes(name, cb);
 };

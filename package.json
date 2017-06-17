@@ -4,7 +4,8 @@
   "dependencies": {
     "consul": "^0.29.0",
     "async": "^2.4.1",
-    "underscore": "^1.8.3"
+    "underscore": "^1.8.3",
+    "puid": "^1.0.7"
   },
   "devDependencies": {
     "mocha": "^3.4.2"

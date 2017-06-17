@@ -13,19 +13,50 @@ describe('Require consul', () => {
 });
 
 
+describe("Test service nodes", () => {
+    const consul = require('../service');
+    it("should print all nodes where run consul service", (done) => {
+        consul.getServiceNodes({name: 'consul'}, (err, res) => {
+            if(err) {
+                done(err);
+            } else {
+                console.log(util.inspect(res));
+                done();
+            }
+        })
+    });
+});
+
+
 describe("API test", () => {
     const consul = require('../service');
-    describe("Service info", () => {
-        it('should make default system info', () => {
-            consul.initService({default_interface:'wlp2s0'});
-
-            console.log(util.inspect(consul.getServiceInfo()))
-        });
-    });
-
-    describe("Register", () => {
+    consul.initService({name:"hello-test"});
+    describe("Register And Deregister", () => {
         it('should register in consul. (require consul run)', (done) => {
-            consul.register({name: "hello"}, (err, res) => {
+            console.log("Register...")
+            consul.register((err) => {
+                if(err) {
+                    done(err);
+                } else {
+                    done();
+                }
+            });
+        });
+
+        it("shoul get list service from consul and print", (done) => {
+            console.log("Print list");
+            consul.getServicesList({}, (err, res) => {
+                if (err) {
+                    done(err);
+                } else {
+                    console.log(util.inspect(res));
+                    done();
+                }
+            })
+        });
+
+        it('should print service nodes list', (done) => {
+            consul.getServiceNodes({}, (err, res) =>{
                 if(err) {
                     done(err);
                 } else {
@@ -34,18 +65,16 @@ describe("API test", () => {
                 }
             });
         });
-    });
 
-    describe("Deregister", () => {
         it('should deregister hello service', (done) => {
-            consul.deregister({name: 'hello'}, (err, res) => {
+            console.log("Deregister...");
+            consul.deregister((err) => {
                 if(err) {
                     done(err);
                 } else {
-                    console.log(util.inspect(res));
                     done();
                 }
             });
         })
-    })
+    });
 });
