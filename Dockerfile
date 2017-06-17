@@ -1,9 +1,15 @@
-FROM consul:0.8.3
+FROM ubuntu
 
-COPY entry-point.sh /usr/local/bin/entry-point.sh
+RUN apt-get update && apt-get install --no-install-recommends -y curl npm
 
-RUN chmod +x /usr/local/bin/entry-point.sh
+RUN npm install -g n && n 6.10.2
 
-ENTRYPOINT ["/usr/local/bin/entry-point.sh"]
+WORKDIR /app
 
+COPY package.json /app
+COPY service.js /app
+COPY /test /app/test
 
+RUN npm install
+
+CMD ["npm", "test"]

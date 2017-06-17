@@ -19,11 +19,15 @@ if [ -n "$CONSUL_BIND_INTERFACE" ]; then
     CONSUL_BIND="-bind=$CONSUL_BIND_ADDRESS"
 fi
 
+if [ -z "$NUMBER_OF_EXPECTED" ]; then
+    NUMBER_OF_EXPECTED=3
+fi
+
 consul agent \
        $CONSUL_BIND \
        -data-dir="$CONSUL_DATA_DIR" \
        -config-dir="$CONSUL_CONFIG_DIR" \
-       -bootstrap-expect=3 \
+       -bootstrap-expect="$NUMBER_OF_EXPECTED"\
        -retry-join=consul \
        -retry-interval=7s \
        -server \
