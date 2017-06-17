@@ -1,6 +1,10 @@
 
-const consul = require('consul')();
 const os = require('os');
+let host = undefined;
+if(process.env.CONSUL_ADDRESS) {
+    host = {host:process.env.CONSUL_ADDRESS}
+}
+const consul = require('consul')(host);
 const _ = require('underscore');
 const Puid = require('puid');
 

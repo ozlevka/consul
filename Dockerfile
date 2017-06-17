@@ -8,8 +8,9 @@ WORKDIR /app
 
 COPY package.json /app
 COPY service.js /app
-COPY /test /app/test
+COPY test-server.js /app
+
 
 RUN npm install
 
-CMD ["npm", "test"]
+CMD ["bash", "-c", "node test-server.js"]
