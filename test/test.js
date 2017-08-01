@@ -16,7 +16,7 @@ describe('Require consul', () => {
 describe("Test service nodes", () => {
     const consul = require('../service');
     it("should print all nodes where run consul service", (done) => {
-        consul.getServiceNodes({name: 'consul'}, (err, res) => {
+        consul.getServiceNodes({name: 'shield-squid'}, (err, res) => {
             if(err) {
                 done(err);
             } else {

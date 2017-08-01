@@ -4,7 +4,7 @@ let host = undefined;
 if(process.env.CONSUL_ADDRESS) {
     host = {host:process.env.CONSUL_ADDRESS}
 }
-const consul = require('consul')(host);
+const consul = require('consul')({port:8501});
 const _ = require('underscore');
 const Puid = require('puid');
 
