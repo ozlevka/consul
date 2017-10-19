@@ -1,16 +1,50 @@
-version: "3.2"
+version: "3.3"
 
 services:
-  consul:
-    image: ozlevka/consul
+  consul-server:
+    image: ozlevka/consul:1.2.11
     networks:
-      - consul
-    ports:
-      - "8500:8500"
+         - consul
+    # ports:
+    #     - "8500:8500"
     deploy:
-      mode: global
+      mode: replicated
+      replicas: 3
+      endpoint_mode: dnsrr
+      update_config:
+          parallelism: 1
+          failure_action: rollback
+      restart_policy:
+          condition: any
+      resources:
+        limits:
+          memory: 1GB
+          cpus: "1"
     environment:
-      - "CONSUL_BIND_INTERFACE=eth2"
+        - "CONSUL_BIND_INTERFACE=eth0"
+        - "NUMBER_OF_EXPECTED=3"
+
+  consul:
+    image: ozlevka/consul:1.2.11
+    networks:
+         - consul
+    ports:
+        - "8500:8500"
+    deploy:
+      mode: replicated
+      replicas: 1
+      update_config:
+          parallelism: 1
+          failure_action: rollback
+      restart_policy:
+          condition: any
+      resources:
+        limits:
+          memory: 1GB
+          cpus: "1"
+    environment:
+        - "CONSUL_BIND_INTERFACE=eth2"
+        - "RUN_AGENT=yes"
 
 networks:
   consul:

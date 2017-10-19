@@ -1,0 +1,1 @@
+docker build -t ozlevka/consul:1.2.11 .

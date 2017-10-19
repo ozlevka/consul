@@ -23,14 +23,37 @@ if [ -z "$NUMBER_OF_EXPECTED" ]; then
     NUMBER_OF_EXPECTED=3
 fi
 
-consul agent \
-       $CONSUL_BIND \
-       -data-dir="$CONSUL_DATA_DIR" \
-       -config-dir="$CONSUL_CONFIG_DIR" \
-       -bootstrap-expect="$NUMBER_OF_EXPECTED"\
-       -retry-join=consul \
-       -retry-interval=7s \
-       -server \
-       -ui \
-       -client=0.0.0.0 \
-       -disable-host-node-id=true
+run_as_server() {
+    consul agent \
+        $CONSUL_BIND \
+        -data-dir="$CONSUL_DATA_DIR" \
+        -config-dir="$CONSUL_CONFIG_DIR" \
+        -bootstrap-expect="$NUMBER_OF_EXPECTED"\
+        -retry-join=consul-server \
+        -retry-interval=3s \
+        -server \
+        -disable-host-node-id=true
+        -domain="consul-server" 
+}
+
+
+run_as_agent() {
+    consul agent \
+        $CONSUL_BIND \
+        -data-dir="$CONSUL_DATA_DIR" \
+        -config-dir="$CONSUL_CONFIG_DIR" \
+        -retry-join=consul-server \
+        -retry-interval=7s \
+        -ui \
+        -client=0.0.0.0
+}
+
+if [ -z "$RUN_AGENT" ]; then
+    echo "[i] Start as server"
+    
+    run_as_server
+else
+    echo "[i] Start as agent"
+    
+    run_as_agent    
+fi
